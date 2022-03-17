@@ -58,3 +58,52 @@ export const updateAnimal = async (id, animal) => {
       console.error(error)
     }
   }
+
+  export const deleteAnimal = async id =>{
+    try{
+      const result = await animalCollection.doc(id).delete()
+      return "Animal deleted"
+
+ 
+    }catch (error){
+      console.error(error)
+    }
+  }
+
+  export const getAnimalsByFilter = async animalFilter => {
+
+    if(!animalFilter){
+      animalFilter = {}
+    }
+
+
+    const { name, race, color, age } = animalFilter 
+
+    let query = animalCollection
+
+    if(name){
+      query = query.where("name", "==", name)
+    }
+    if(race){
+      query = query.where("color", "==", race)
+    }
+    if(color){
+      query = query.where("color","==", "color")
+    }
+    if(age){
+      query = query.where("age", "==", "age")
+    }
+    try{
+    const snapshot = await animalCollection.get()
+    const result = snapshot.docs.map( doc => {
+        const animal = doc.data()
+        animal.id = doc.id
+        return animal
+    
+    })
+    return result
+  } catch (error) {
+    console.error(error)
+
+  }
+}

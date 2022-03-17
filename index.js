@@ -1,19 +1,45 @@
 import express from 'express'
-import { getAllAnimals, createAnimal, updateAnimal } from './src/animals.js';
+import { getAllAnimals, createAnimal, updateAnimal, getAnimalById, deleteAnimal, getAnimalsByFilter } from './src/animals.js';
  
 const app = express();
 app.use(express.json())
 
-app.get('/animals', async (req, res) => {
+app.get(`/animals/:id`,async (req, res) => {
+    try{
+        const { id } =req.params
+        const result = await getAnimalById(id)
+        res.status(200).send(result)
 
-    try {
-        const result = await getAllAnimals()
+    } catch (error) {
+        res.status(500).send(error) 
+    }
+
+    
+})
+
+app.get('/animals', async (req, res) => {
+    const {name, race, color, age} = req.query 
+    const filter = {name, race, color, age}
+
+        try {
+        const result = await getAnimalsByFilter()
         res.status(200).send(result)
     } catch (error) {
         res.status(500).send(error)
     }
     //res.send('Dogs')
 
+})
+
+app.delete('/animals/:id', async (req, res) => {
+    const { id } = req.params 
+
+    try {
+        const result = await deleteAnimal(id)
+        res.status(200).send(result)
+    } catch (error) {
+        res.status(500).send(error)
+    }
 })
 
 app.post('/animals', async (req, res) => {
@@ -45,7 +71,6 @@ app.patch('/animals/:id', async (req, res)=>{
         res.status(500).send(error)
     }
 })
-
 const port = 5600
 app.listen(port, () => { 
     
